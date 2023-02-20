@@ -1,22 +1,21 @@
-CREATE OR REPLACE FUNCTION public.f_create_tag(p_name text)
- RETURNS integer
+CREATE OR REPLACE FUNCTION public.f_get_user(p_username text)
+ RETURNS users
  LANGUAGE plpgsql
 AS $function$
 DECLARE
-  v_id integer;
+  user_record users;
 BEGIN
-  -- Check if tag with the same name already exists
-  SELECT id INTO v_id FROM public.tags WHERE name = p_name LIMIT 1;
+  SELECT *
+  INTO user_record
+  FROM users
+  WHERE username = p_username
+  LIMIT 1;
 
-  -- If tag already exists, return its id
-  IF v_id IS NOT NULL THEN
-    RETURN v_id;
+  IF NOT FOUND THEN
+    RETURN NULL;
   END IF;
 
-  -- If tag does not exist, create a new one and return its id
-  INSERT INTO public.tags(name) VALUES(p_name) RETURNING id INTO v_id;
-
-  RETURN v_id;
+  RETURN user_record;
 END;
 $function$
 ;

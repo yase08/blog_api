@@ -1,22 +1,23 @@
-CREATE OR REPLACE FUNCTION public.f_create_tag(p_name text)
- RETURNS integer
+CREATE OR REPLACE FUNCTION public.f_delete_post(p_post_id integer)
+ RETURNS json
  LANGUAGE plpgsql
 AS $function$
 DECLARE
-  v_id integer;
+    v_title text;
 BEGIN
-  -- Check if tag with the same name already exists
-  SELECT id INTO v_id FROM public.tags WHERE name = p_name LIMIT 1;
+    -- Check if post with given id exists
+    IF NOT EXISTS (SELECT 1 FROM posts WHERE id = p_post_id) THEN
+        RAISE EXCEPTION 'Post with id % not found', p_post_id;
+    END IF;
 
-  -- If tag already exists, return its id
-  IF v_id IS NOT NULL THEN
-    RETURN v_id;
-  END IF;
+    -- Get post title before deleting
+    SELECT title INTO v_title FROM posts WHERE id = p_post_id;
 
-  -- If tag does not exist, create a new one and return its id
-  INSERT INTO public.tags(name) VALUES(p_name) RETURNING id INTO v_id;
+    -- Delete post
+    DELETE FROM posts WHERE id = p_post_id;
 
-  RETURN v_id;
+    -- Return deleted post title
+    RETURN json_build_object('msg', 'Post "' || v_title || '" successfully deleted');
 END;
 $function$
 ;

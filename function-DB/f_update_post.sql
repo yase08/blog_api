@@ -1,22 +1,17 @@
-CREATE OR REPLACE FUNCTION public.f_create_tag(p_name text)
- RETURNS integer
+CREATE OR REPLACE FUNCTION public.f_update_post(p_id integer, p_title text, p_description text, p_body text, p_tag_id integer, p_thumbnail text, p_slug text)
+ RETURNS void
  LANGUAGE plpgsql
 AS $function$
-DECLARE
-  v_id integer;
 BEGIN
-  -- Check if tag with the same name already exists
-  SELECT id INTO v_id FROM public.tags WHERE name = p_name LIMIT 1;
-
-  -- If tag already exists, return its id
-  IF v_id IS NOT NULL THEN
-    RETURN v_id;
-  END IF;
-
-  -- If tag does not exist, create a new one and return its id
-  INSERT INTO public.tags(name) VALUES(p_name) RETURNING id INTO v_id;
-
-  RETURN v_id;
+    UPDATE public.posts
+    SET
+        title = p_title,
+        description = p_description,
+        body = p_body,
+        tag_id = p_tag_id,
+        thumbnail = p_thumbnail,
+        slug = p_slug
+    WHERE id = p_id;
 END;
 $function$
 ;
