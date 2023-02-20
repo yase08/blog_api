@@ -29,11 +29,12 @@ const getAllPosts = async (req, res) => {
 
 const singlePost = async (req, res) => {
   try {
-    const post = await knex.raw("SELECT * FROM public.f_get_post(?)", [
+    const query = await knex.raw("SELECT * FROM public.f_get_post(?)", [
       req.params.slug,
     ]);
-    if (post.rows.length > 0) {
-      res.send(post.rows[0]);
+    const post = query.rows[0];
+    if (post.length) {
+      res.send(post);
     } else {
       res.status(404).json({
         msg: "Post not found",
@@ -68,10 +69,11 @@ const createPost = async (req, res) => {
 // giblog
 const updatePost = async (req, res) => {
   try {
-    const post = await knex.raw("SELECT * FROM public.f_get_post(?)", [
+    const query = await knex.raw("SELECT * FROM public.f_get_post(?)", [
       req.params.slug,
     ]);
-    if (!post) {
+    const post = query.rows[0];
+    if (!post.length) {
       res.status(400).json({
         msg: "Post Not Found!",
       });
@@ -100,10 +102,11 @@ const updatePost = async (req, res) => {
 
 const removePost = async (req, res) => {
   try {
-    const post = await knex.raw("SELECT * FROM public.f_get_post(?)", [
+    const query = await knex.raw("SELECT * FROM public.f_get_post(?)", [
       req.params.slug,
     ]);
-    if (!post) {
+    const post = query.rows[0];
+    if (!post.length) {
       res.status(400).json({
         msg: "Post Not Found!",
       });

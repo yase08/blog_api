@@ -14,9 +14,9 @@ const getAllTags = async (req, res) => {
 // Create a new tag
 const createTag = async (req, res) => {
   const { name } = req.body;
-  const result = await knex.raw("SELECT public.f_create_tag(?)", [name]);
-  const tagId = result.rows[0].f_create_tag;
-  res.json({ id: tagId });
+  const query = await knex.raw("SELECT public.f_create_tag(?)", [name]);
+  const tagId = query.rows[0].f_create_tag;
+  res.json({ msg: "Tag Successfully Created!", id: tagId });
 };
 
 // Delete a tag
