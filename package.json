@@ -10,5 +10,24 @@
     "multer": "^1.4.5-lts.1",
     "pg": "^8.9.0",
     "sqlite3": "^5.1.4"
-  }
+  },
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yase08/blog_api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yase08/blog_api/issues"
+  },
+  "homepage": "https://github.com/yase08/blog_api#readme",
+  "description": ""
 }

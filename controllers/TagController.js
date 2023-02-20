@@ -9,14 +9,21 @@ const getAllTags = async (req, res) => {
       msg: error.message,
     });
   }
-}
+};
 
-// const getAllPostsByTag = async (req, res) => {
-//   try {
-    
-//   } catch (error) {
-    
-//   }
-// }
+// Create a new tag
+const createTag = async (req, res) => {
+  const { name } = req.body;
+  const result = await knex.raw("SELECT public.f_create_tag(?)", [name]);
+  const tagId = result.rows[0].f_create_tag;
+  res.json({ id: tagId });
+};
 
-module.exports = getAllTags
+// Delete a tag
+const deleteTag = async (req, res) => {
+  const { id } = req.params;
+  await knex.raw("SELECT public.f_delete_tag(?)", [id]);
+  res.json({ message: "Tag deleted successfully" });
+};
+
+module.exports = { getAllTags, createTag, deleteTag };

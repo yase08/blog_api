@@ -14,13 +14,14 @@ const diskStorage = multer.diskStorage({
     );
   },
 });
-const auth = require("../../middlewares/auth")
+const auth = require("../../middlewares/auth");
 
 router.get("/:username", auth, userController.getUserProfile);
 router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.put(
-  "/update/:username", auth,
+  "/update/:id",
+  auth,
   multer({ storage: diskStorage }).single("avatar"),
   userController.updateUser
 );

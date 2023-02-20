@@ -16,11 +16,15 @@ const diskStorage = multer.diskStorage({
   },
 });
 
-router.get("/article", postController.getAllPosts);
-router.get("/singlepost/:slug", postController.singlePost);
-router.post("/createpost", multer({ storage: diskStorage }).single("thumbnail"), postController.createPost);
-router.post("/createComment/:post_id", auth, postController.createComment);
-router.put("/update/:slug", auth, postController.updatePost);
+router.get("/", postController.getAllPosts);
+router.post(
+  "/",
+  multer({ storage: diskStorage }).single("thumbnail"),
+  postController.createPost
+);
+router.get("/:slug", postController.singlePost);
+router.put("/:slug", auth, postController.updatePost);
+router.post("/comment/:post_id", auth, postController.createComment);
 router.delete("/comment/:id", auth, postController.removeComment);
 router.delete("/:slug", auth, postController.removePost);
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 const routes = require("./routes/index");
 const { default: helmet } = require("helmet");
 const bodyParser = require("body-parser");
@@ -18,5 +18,5 @@ app.use(
   })
 );
 app.use(helmet());
-app.use("/kuning", routes);
+app.use("/api", routes);
 app.listen(port, () => console.log(`Listening on http://localhost:${port}`));

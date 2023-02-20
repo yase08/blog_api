@@ -1,20 +1,20 @@
 const knex = require("../db/knex");
 
-const getPopularPost = async (req, res) => {
-  try {
-    const posts = await knex
-      .select()
-      .from("posts")
-      .then((posts) => {
-        return posts;
-      });
-    res.send(posts);
-  } catch (error) {
-    res.json({
-      msg: error.message,
-    });
-  }
-};
+// const getPopularPost = async (req, res) => {
+//   try {
+//     const posts = await knex
+//       .select()
+//       .from("posts")
+//       .then((posts) => {
+//         return posts;
+//       });
+//     res.send(posts);
+//   } catch (error) {
+//     res.json({
+//       msg: error.message,
+//     });
+//   }
+// };
 
 const getAllPosts = async (req, res) => {
   try {
@@ -29,15 +29,15 @@ const getAllPosts = async (req, res) => {
 
 const singlePost = async (req, res) => {
   try {
-    const post = await knex
-      .select()
-      .from("posts")
-      .where("slug", req.params.slug)
-      .then((post) => {
-        return post[0];
+    const post = await knex.raw("SELECT * FROM public.f_get_post(?)", [
+      req.params.slug,
+    ]);
+    if (post.rows.length > 0) {
+      res.send(post.rows[0]);
+    } else {
+      res.status(404).json({
+        msg: "Post not found",
       });
-    if (post.slug === req.params.slug) {
-      res.send(post);
     }
   } catch (error) {
     res.json({
@@ -48,58 +48,53 @@ const singlePost = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
-    const { title, description, body, tag_id, thumbnail, user_id, slug } = req.body;
-    const post = {};
-    if (title) post.title = title;
-    if (description) post.description = description;
-    if (body) post.body = body;
-    if (slug) post.slug = slug;
-    if (tag_id) post.tag_id = tag_id;
-    if (user_id) post.user_id = 1;
-    if (thumbnail) {
-      const { filename, mimetype } = req.file;
-      const filepath = req.file.path;
-      const thumbnail = filename + filepath + "." + mimetype;
-      post.thumbnail = thumbnail;
-    } else {
-      throw new Error(400, "Thumbnail is required!");
-    }
-    await knex("posts").insert(post);
+    const { title, description, body, tag_id, slug } = req.body;
+    const user_id = 1;
+    // const user_id = req.user.id;
+    const thumbnail = req.file ? req.file.filename : null;
+    const post = await knex.raw(
+      "SELECT public.f_create_post(?, ?, ?, ?, ?, ?, ?)",
+      [title, description, body, tag_id, thumbnail, user_id, slug]
+    );
     res.json({
-      msg: "Create Success!",
+      msg: "Post Successfully Created!",
+      id: post.rows[0].f_create_post,
     });
   } catch (error) {
-    res.json({
-      msg: error.message,
-    });
+    res.status(500).json({ error: error.message });
   }
 };
 
+// giblog
 const updatePost = async (req, res) => {
   try {
-    const { title, description, body, thumbnail, tag_id, user_id } = req.body;
-    const post = {};
-    if (title) post.title = title;
-    if (description) post.description = description;
-    if (body) post.body = body;
-    if (tag_id) post.tag_id = tag_id;
-    if (user_id) post.user_id = req.user.id;
-    if (thumbnail) {
-      const { filename, mimetype } = req.file;
-      const filepath = req.file.path;
-      const thumbnail = filename + filepath + "." + mimetype;
-      post.thumbnail = thumbnail;
-    } else {
-      throw new Error(400, "Thumbnail is required!");
-    }
-    await knex
+    const post = await knex
       .select()
       .from("posts")
       .where("slug", req.params.slug)
-      .update(post);
-    res.json({
-      msg: "Update Success!",
-    });
+      .then((post) => {
+        return post[0];
+      });
+    if (!post) {
+      res.status(400).json({
+        msg: "Post Not Found!",
+      });
+    } else {
+      const { title, description, body, tag_id, thumbnail } = req.body;
+      const slug = req.params.slug;
+      await knex.raw("SELECT f_update_post(?, ?, ?, ?, ?, ?, ?)", [
+        post.id,
+        title,
+        description,
+        body,
+        tag_id,
+        thumbnail,
+        slug,
+      ]);
+      res.json({
+        msg: "Post Successfully Updated!",
+      });
+    }
   } catch (error) {
     res.json({
       msg: error.message,
@@ -121,7 +116,7 @@ const removePost = async (req, res) => {
         msg: "Post Not Found!",
       });
     } else {
-      await knex.del(post);
+      await knex.raw("SELECT f_delete_post(?)", [post.id]);
       res.json({
         msg: "Post Successfully Deleted!",
       });
@@ -135,12 +130,12 @@ const removePost = async (req, res) => {
 
 const createComment = async (req, res) => {
   try {
-    const { comment, post_id, user_id } = req.body;
-    const comments = {};
-    if (comment) comments.comment = comment;
-    if (post_id) comments.post_id = req.post.id;
-    if (user_id) comments.user_id = req.user.id;
-    await knex("comments").insert(comment);
+    const { comment, user_id } = req.body;
+    await knex.raw("SELECT f_create_comment(?, ?, ?)", [
+      comment,
+      (post_id = req.params.post_id),
+      user_id,
+    ]);
     res.json({
       msg: "Create Success!",
     });
@@ -156,17 +151,17 @@ const removeComment = async (req, res) => {
     const comment = await knex
       .select()
       .from("comments")
-      .where("id", req.post.post_id)
-      .where("id", req.user.user_id)
+      .where("id", req.params.comment_id)
+      .where("user_id", req.user.id)
       .then((comment) => {
         return comment[0];
       });
     if (!comment) {
       res.status(400).json({
-        msg: "Comment Not Found!",
+        msg: "Comment Not Found or Not Authorized!",
       });
     } else {
-      await knex.del(comment);
+      await knex.raw("SELECT f_delete_comment(?)", [comment.id]);
       res.json({
         msg: "Comment Successfully Deleted!",
       });
@@ -179,7 +174,7 @@ const removeComment = async (req, res) => {
 };
 
 module.exports = {
-  getPopularPost,
+  // getPopularPost,
   getAllPosts,
   singlePost,
   updatePost,
