@@ -1,8 +1,8 @@
-require('dotenv').config({path: './.env'})
+require('dotenv').config()
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT;
 const routes = require("./routes/index");
 const { default: helmet } = require("helmet");
 const bodyParser = require("body-parser");

@@ -1,29 +1,29 @@
 module.exports = {
   development: {
-    client: "pg",
+    client: process.env.CLIENT,
     connection: {
-      database: process.env.DATABASE_NAME || "blog",
-      user: process.env.POSTGRES_USER || "postgres",
-      password: process.env.POSTGRES_USER_PW || "Ayasbogor123_",
-      port: process.env.POSTGRES_PORT || 5432,
-      host: process.env.POSTGRES_HOST || "localhost",
+      database: process.env.DATABASE_NAME,
+      user: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_USER_PW,
+      port: process.env.POSTGRES_PORT,
+      host: process.env.POSTGRES_HOST,
     },
     migrations: {
-      directory: "./db/migrations",
+      directory: process.env.MIGRATIONS,
     },
     seeds: {
-      directory: "./db/seeds",
+      directory: process.env.SEEDS,
     },
   },
 
   production: {
-    client: "pg",
+    client: process.env.CLIENT,
     connection: process.env.DATABASE_URL,
     migrations: {
-      directory: "./db/migrations",
+      directory: process.env.MIGRATIONS,
     },
     seeds: {
-      directory: "./db/seeds",
+      directory: process.env.SEEDS,
     },
     ssl: {
       rejectUnathorized: false,
