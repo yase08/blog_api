@@ -68,13 +68,9 @@ const createPost = async (req, res) => {
 // giblog
 const updatePost = async (req, res) => {
   try {
-    const post = await knex
-      .select()
-      .from("posts")
-      .where("slug", req.params.slug)
-      .then((post) => {
-        return post[0];
-      });
+    const post = await knex.raw("SELECT * FROM public.f_get_post(?)", [
+      req.params.slug,
+    ]);
     if (!post) {
       res.status(400).json({
         msg: "Post Not Found!",
@@ -104,13 +100,9 @@ const updatePost = async (req, res) => {
 
 const removePost = async (req, res) => {
   try {
-    const post = await knex
-      .select()
-      .from("posts")
-      .where("slug", req.params.slug)
-      .then((post) => {
-        return post[0];
-      });
+    const post = await knex.raw("SELECT * FROM public.f_get_post(?)", [
+      req.params.slug,
+    ]);
     if (!post) {
       res.status(400).json({
         msg: "Post Not Found!",
