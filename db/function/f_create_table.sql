@@ -1,5 +1,7 @@
-CREATE OR REPLACE FUNCTION f_create_table()
-RETURNS void AS $$
+CREATE OR REPLACE FUNCTION public.f_create_table()
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
 BEGIN
     -- Define the "comments" table
     DROP TABLE IF EXISTS public.comments;
@@ -25,7 +27,6 @@ BEGIN
         thumbnail VARCHAR(255),
         created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP,
         user_id INT NOT NULL,
         tag_id INT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES public.users(id),
@@ -54,4 +55,5 @@ BEGIN
         avatar VARCHAR(255)
     );
 END;
-$$ LANGUAGE plpgsql;
+$function$
+;
