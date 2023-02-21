@@ -1,81 +1,57 @@
--- public."comments" definition
+CREATE OR REPLACE FUNCTION f_create_table()
+RETURNS void AS $$
+BEGIN
+    -- Define the "comments" table
+    DROP TABLE IF EXISTS public.comments;
+    CREATE TABLE public.comments (
+        id SERIAL PRIMARY KEY,
+        comment TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        post_id INT NOT NULL,
+        user_id INT NOT NULL,
+        FOREIGN KEY (post_id) REFERENCES public.posts(id),
+        FOREIGN KEY (user_id) REFERENCES public.users(id)
+    );
 
--- Drop table
+    -- Define the "posts" table
+    DROP TABLE IF EXISTS public.posts;
+    CREATE TABLE public.posts (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) NOT NULL UNIQUE, 
+        body TEXT NOT NULL,
+        thumbnail VARCHAR(255),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        deleted_at TIMESTAMP,
+        user_id INT NOT NULL,
+        tag_id INT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES public.users(id),
+        FOREIGN KEY (tag_id) REFERENCES public.tags(id)
+    );
 
--- DROP TABLE public."comments";
+    -- Define the "tags" table
+    DROP TABLE IF EXISTS public.tags;
+    CREATE TABLE public.tags (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
 
-CREATE TABLE public."comments" (
-	id serial,
-	"comment" text NULL,
-	created_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	post_id int4 NOT NULL,
-	user_id int4 NOT NULL,
-	CONSTRAINT comments_pkey PRIMARY KEY (id),
-	CONSTRAINT comments_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.posts(id),
-	CONSTRAINT comments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
-);
-
-
-
--- public.posts definition
-
--- Drop table
-
--- DROP TABLE public.posts;
-
-CREATE TABLE public.posts (
-	id serial,
-	title varchar(255) NOT NULL,
-	description varchar(255) NOT NULL,
-	slug varchar(255) NOT NULL, 
-	body text NOT NULL,
-	thumbnail varchar(255) NULL,
-	created_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	deleted_at timestamp NULL,
-	user_id int4 NOT NULL,
-	tag_id int4 NOT NULL,
-	CONSTRAINT posts_pkey PRIMARY KEY (id),
-	CONSTRAINT posts_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES public.tags(id),
-	CONSTRAINT posts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
-);
-
-
-
--- public.tags definition
-
--- Drop table
-
--- DROP TABLE public.tags;
-
-CREATE TABLE public.tags (
-	id serial,
-	"name" varchar(255) NOT NULL,
-	created_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT tags_pkey PRIMARY KEY (id)
-);
-
-
-
-
--- public.users definition
-
--- Drop table
-
--- DROP TABLE public.users;
-
-CREATE TABLE public.users (
-	id serial,
-	username varchar(50) NOT NULL,
-	"password" varchar(255) NOT NULL,
-	email varchar(255) NOT NULL,
-	created_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
-	deleted_at timestamp NULL,
-	avatar varchar(255) NULL,
-	CONSTRAINT users_email_key UNIQUE (email),
-	CONSTRAINT users_pkey PRIMARY KEY (id),
-	CONSTRAINT users_username_key UNIQUE (username)
-);
+    -- Define the "users" table
+    DROP TABLE IF EXISTS public.users;
+    CREATE TABLE public.users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        deleted_at TIMESTAMP,
+        avatar VARCHAR(255)
+    );
+END;
+$$ LANGUAGE plpgsql;

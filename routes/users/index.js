@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../../controllers/UserController");
-const multer = require("multer");
+const auth = require("../../middlewares/auth");
 const path = require("path");
+const multer = require("multer");
 const diskStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../../public/uploads"));
+    cb(null, path.join(__dirname, "../../public/avatar"));
   },
   filename: function (req, file, cb) {
     cb(
@@ -14,13 +15,13 @@ const diskStorage = multer.diskStorage({
     );
   },
 });
-const auth = require("../../middlewares/auth");
+const upload = multer();
 
 router.get("/:username", auth, userController.getUserProfile);
 router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.put(
-  "/update/:id",
+  "/:id",
   auth,
   multer({ storage: diskStorage }).single("avatar"),
   userController.updateUser

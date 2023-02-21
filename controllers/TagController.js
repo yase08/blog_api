@@ -2,28 +2,48 @@ const knex = require("../db/knex");
 
 const getAllTags = async (req, res) => {
   try {
-    const tags = await knex("tags");
-    res.send(tags);
+    const { rows: tags } = await knex.raw("SELECT * FROM f_tags_select_all()");
+    res.json({ tags });
   } catch (error) {
-    res.json({
-      msg: error.message,
-    });
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
 // Create a new tag
 const createTag = async (req, res) => {
-  const { name } = req.body;
-  const query = await knex.raw("SELECT public.f_create_tag(?)", [name]);
-  const tagId = query.rows[0].f_create_tag;
-  res.json({ msg: "Tag Successfully Created!", id: tagId });
+  try {
+    const { name } = req.body;
+    const result = await knex.raw("SELECT public.f_tags_insert(?)", [name]);
+    const message = result.rows[0].f_tags_insert;
+
+    return res.status(201).json({ message });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
 };
 
 // Delete a tag
 const deleteTag = async (req, res) => {
-  const { id } = req.params;
-  await knex.raw("SELECT public.f_delete_tag(?)", [id]);
-  res.json({ message: "Tag deleted successfully" });
+  try {
+    const { id } = req.params;
+
+    const deletedTag = await knex
+      .raw("SELECT * FROM f_tags_delete(?)", [id])
+      .then((result) => result.rows[0]);
+
+    res.json({ message: "Tag deleted successfully", tag: deletedTag });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
 };
 
 module.exports = { getAllTags, createTag, deleteTag };
