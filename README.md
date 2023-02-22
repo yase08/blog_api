@@ -21,9 +21,9 @@
    > Get single post by slug
 4. http://localhost:8000/api/post/:slug
    > Update post like thumbnails, titles, descriptions, body text, tags, and slug by slug
-5. http://localhost:8000/api/post/comment/:post_id
+5. http://localhost:8000/api/post/comment/:slug
    > Create comment that input comment by slug
-6. http://localhost:8000/api/post/comment/:id
+6. http://localhost:8000/api/post/comment/:slug/:id
    > Delete Comment by slug and id
 
 ### Tag Routes
