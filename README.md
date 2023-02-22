@@ -2,15 +2,13 @@
 
 ### User Routes
 
-1. http://localhost:8000/api/user
-   > Get all user
-2. http://localhost:8000/api/user/:username
+1. http://localhost:8000/api/user/:username
    > Get user data based on username
-3. http://localhost:8000/api/user/login
+2. http://localhost:8000/api/user/login
    > Login to the account using the email and password that was created at the register
-4. http://localhost:8000/api/user/register
+3. http://localhost:8000/api/user/register
    > Register an account by entering your username, email and password.
-5. http://localhost:8000/api/user/update/:id
+4. http://localhost:8000/api/user/update/:id
    > Update user profile such as avatar, username, email, and password by id
 
 ### Post Routes
@@ -22,11 +20,11 @@
 3. http://localhost:8000/api/post/:slug
    > Get single post by slug
 4. http://localhost:8000/api/post/:slug
-   > Update post like thumbnails, titles, descriptions, body text, tags, and slug
+   > Update post like thumbnails, titles, descriptions, body text, tags, and slug by slug
 5. http://localhost:8000/api/post/comment/:post_id
-   > Create comment that input comment
+   > Create comment that input comment by slug
 6. http://localhost:8000/api/post/comment/:id
-   > Delete Comment by id
+   > Delete Comment by slug and id
 
 ### Tag Routes
 
