@@ -88,8 +88,7 @@ SELECT public.f_comments_insert('This is a new comment', 7, 3);
 SELECT public.f_comments_select(4);
 
 -- delete comment
-SELECT public.f_comments_delete(5);
-
+SELECT public.f_comments_delete('woi',6);
 
 
 ```
