@@ -164,10 +164,9 @@ const removeComment = async (req, res) => {
   try {
     const { slug, id } = req.params;
 
-    // Panggil fungsi f_comments_delete dengan parameter id
     const result = await knex.raw(
-      "SELECT public.f_comments_delete(?) as message",
-      [id]
+      "SELECT public.f_comments_delete(?, ?) as message",
+      [slug, id]
     );
 
     res.json({ message: result.rows[0].message });

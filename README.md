@@ -32,8 +32,8 @@
    > Get all tags
 2. http://localhost:8000/api/tag
    > Create tag that input tag name
-3. http://localhost:8000/api/tag/:id
-   > Delete tag by id
+3. http://localhost:8000/api/tag/:slug/:id
+   > Delete tag by slug and id
 
 ## Testing SQLnya masbro
 
@@ -88,8 +88,7 @@ SELECT public.f_comments_insert('This is a new comment', 7, 3);
 SELECT public.f_comments_select(4);
 
 -- delete comment
-SELECT public.f_comments_delete(5);
-
+SELECT public.f_comments_delete('woi',6);
 
 
 ```
